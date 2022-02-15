@@ -1,8 +1,8 @@
 import Head from 'next/head'
 
-import AppLayout from 'components/layout/AppLayout'
-import NicknameForm from 'components/profile/NicknameForm'
-import FollowList from 'components/profile/FollowList'
+import AppLayout from '@components/layout/AppLayout'
+import NicknameForm from '@components/profile/NicknameForm'
+import FollowList from '@components/profile/FollowList'
 
 const ProfilePage = () => {
 	const followerList = [

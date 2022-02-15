@@ -1,20 +1,22 @@
-import { FC, useState } from 'react'
+import { FC } from 'react'
+import { useSelector } from 'react-redux'
 import Link from 'next/link'
-import styled from 'styled-components'
 import { useRouter } from 'next/router'
+import styled from 'styled-components'
 import { Col, Input, Menu, Row } from 'antd'
 
-import UserProfile from 'components/common/UserProfile'
-import LoginForm from 'components/common/LoginForm'
+import { RootState } from '@store/reducers'
+import UserProfile from '@components/common/UserProfile'
+import LoginForm from '@components/common/LoginForm'
 
 const SearchInput = styled(Input.Search)`
 	vertical-align: middle;
 `
 
 const AppLayout: FC = ({ children }) => {
-	const router = useRouter()
+	const { isLoggedIn } = useSelector((state: RootState) => state.user)
 
-	const [isLoggedIn, setIsLoggedIn] = useState(false)
+	const router = useRouter()
 
 	return (
 		<>
@@ -40,11 +42,7 @@ const AppLayout: FC = ({ children }) => {
 			</Menu>
 			<Row gutter={8}>
 				<Col xs={24} md={6}>
-					{isLoggedIn ? (
-						<UserProfile setIsLoggedIn={setIsLoggedIn} />
-					) : (
-						<LoginForm setIsLoggedIn={setIsLoggedIn} />
-					)}
+					{isLoggedIn ? <UserProfile /> : <LoginForm />}
 				</Col>
 				<Col xs={24} md={12}>
 					{children}

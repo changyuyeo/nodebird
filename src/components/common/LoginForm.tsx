@@ -1,9 +1,11 @@
-import { Dispatch, FC, SetStateAction, useCallback } from 'react'
+import { useCallback } from 'react'
+import { useDispatch } from 'react-redux'
 import Link from 'next/link'
 import styled from 'styled-components'
 import { Button, Form, Input } from 'antd'
 
-import useInput from 'hooks/useInput'
+import useInput from '@hooks/useInput'
+import { logInAction } from '@store/actions/user'
 
 const FormWrapper = styled(Form)`
 	padding: 10px;
@@ -19,19 +21,15 @@ const ButtonWrapper = styled.div`
 	}
 `
 
-interface Props {
-	setIsLoggedIn: Dispatch<SetStateAction<boolean>>
-}
+const LoginForm = () => {
+	const dispatch = useDispatch()
 
-const LoginForm: FC<Props> = ({ setIsLoggedIn }) => {
 	const [email, onChangeEmail] = useInput('')
 	const [password, onChangePassword] = useInput('')
 
 	const onSubmitForm = useCallback(() => {
-		const loginData = { email, password }
-		console.log(loginData)
-		setIsLoggedIn(true)
-	}, [email, password, setIsLoggedIn])
+		dispatch(logInAction({ email, password }))
+	}, [dispatch, email, password])
 
 	return (
 		<FormWrapper onFinish={onSubmitForm}>

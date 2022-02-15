@@ -1,12 +1,13 @@
-import { Dispatch, FC, SetStateAction, useCallback } from 'react'
+import { useCallback } from 'react'
+import { useDispatch } from 'react-redux'
 import { Avatar, Button, Card } from 'antd'
 
-interface Props {
-	setIsLoggedIn: Dispatch<SetStateAction<boolean>>
-}
+import { logOutAction } from '@store/actions/user'
 
-const UserProfile: FC<Props> = ({ setIsLoggedIn }) => {
-	const onLogOut = useCallback(() => setIsLoggedIn(false), [setIsLoggedIn])
+const UserProfile = () => {
+	const dispatch = useDispatch()
+
+	const onLogOut = useCallback(() => dispatch(logOutAction()), [dispatch])
 
 	return (
 		<Card

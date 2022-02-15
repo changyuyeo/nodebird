@@ -3,8 +3,8 @@ import Head from 'next/head'
 import styled from 'styled-components'
 import { Button, Checkbox, Form, Input } from 'antd'
 
-import useInput from 'hooks/useInput'
-import AppLayout from 'components/layout/AppLayout'
+import useInput from '@hooks/useInput'
+import AppLayout from '@components/layout/AppLayout'
 
 const ErrorMessage = styled.div`
 	color: crimson;

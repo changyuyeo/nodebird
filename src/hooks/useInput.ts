@@ -9,15 +9,18 @@ import {
 
 type ReturnType<T = any> = [
 	T,
-	(e: ChangeEvent<HTMLInputElement>) => void,
+	(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void,
 	Dispatch<SetStateAction<T>>
 ]
 
 const useInput = <T = any>(initialData: T): ReturnType => {
 	const [value, setValue] = useState(initialData)
-	const onChangeValue = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-		setValue(e.currentTarget.value as unknown as T)
-	}, [])
+	const onChangeValue = useCallback(
+		(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+			setValue(e.currentTarget.value as unknown as T)
+		},
+		[]
+	)
 	return [value, onChangeValue, setValue]
 }
 
