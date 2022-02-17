@@ -1,10 +1,13 @@
 import { ChangeEvent, useCallback, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import Head from 'next/head'
 import styled from 'styled-components'
 import { Button, Checkbox, Form, Input } from 'antd'
 
 import useInput from '@hooks/useInput'
 import AppLayout from '@components/layout/AppLayout'
+import { signUpAction } from '@store/actions/user'
+import { RootState } from '@store/reducers'
 
 const ErrorMessage = styled.div`
 	color: crimson;
@@ -15,6 +18,9 @@ const ButtonWrapper = styled.div`
 `
 
 const SignupPage = () => {
+	const dispatch = useDispatch()
+	const { signUpLoading } = useSelector((state: RootState) => state.user)
+
 	const [email, onChangeEmail] = useInput('')
 	const [nickname, onChangeNickname] = useInput('')
 	const [password, onChangePassword] = useInput('')
@@ -41,8 +47,8 @@ const SignupPage = () => {
 		if (password !== passwordCheck) return setPasswordError(true)
 		if (!term) return setTermError(true)
 		const userData = { email, nickname, password }
-		console.log(userData)
-	}, [email, nickname, password, passwordCheck, term])
+		dispatch(signUpAction(userData))
+	}, [dispatch, email, nickname, password, passwordCheck, term])
 
 	return (
 		<>
@@ -106,7 +112,7 @@ const SignupPage = () => {
 						</Checkbox>
 					</div>
 					<ButtonWrapper>
-						<Button type="primary" htmlType="submit">
+						<Button type="primary" htmlType="submit" loading={signUpLoading}>
 							가입하기
 						</Button>
 					</ButtonWrapper>

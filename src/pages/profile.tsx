@@ -1,20 +1,21 @@
+import { useEffect } from 'react'
+import { useSelector } from 'react-redux'
+import Router from 'next/router'
 import Head from 'next/head'
 
+import { RootState } from '@store/reducers'
 import AppLayout from '@components/layout/AppLayout'
 import NicknameForm from '@components/profile/NicknameForm'
 import FollowList from '@components/profile/FollowList'
 
 const ProfilePage = () => {
-	const followerList = [
-		{ nickname: '노경호' },
-		{ nickname: '박제봉' },
-		{ nickname: '제봉팍' }
-	]
-	const followingList = [
-		{ nickname: '노경호' },
-		{ nickname: '박제봉' },
-		{ nickname: '제봉팍' }
-	]
+	const { me } = useSelector((state: RootState) => state.user)
+
+	useEffect(() => {
+		if (!(me && me.id)) Router.push('/')
+	}, [me])
+
+	if (!me) return null
 
 	return (
 		<>
@@ -23,8 +24,8 @@ const ProfilePage = () => {
 			</Head>
 			<AppLayout>
 				<NicknameForm />
-				<FollowList header="팔로잉 목록" data={followerList} />
-				<FollowList header="팔로워 목록" data={followingList} />
+				<FollowList header="팔로잉 목록" data={me.Followings} />
+				<FollowList header="팔로워 목록" data={me.Followers} />
 			</AppLayout>
 		</>
 	)

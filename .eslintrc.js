@@ -21,6 +21,7 @@ module.exports = {
 		'@typescript-eslint/no-unused-vars': 'off',
 		'@typescript-eslint/ban-types': 'off',
 		'react/react-in-jsx-scope': 'off',
+		'no-case-declarations': 'off',
 		'no-unused-vars': 'off',
 		'no-undef': 'off'
 	},

@@ -4,7 +4,7 @@ import createSagaMiddleware from 'redux-saga'
 import { composeWithDevTools } from 'redux-devtools-extension'
 
 import rootReducer from '@store/reducers'
-// import rootSaga from './sagas'
+import rootSaga from '@store/sagas'
 
 const configureStore = () => {
 	const sagaMiddleware = createSagaMiddleware()
@@ -16,7 +16,7 @@ const configureStore = () => {
 			: composeWithDevTools(applyMiddleware(...middlewares))
 
 	const store = createStore(rootReducer, enhancer)
-	// store.sagaTask = sagaMiddleware.run(rootSaga)
+	store.sagaTask = sagaMiddleware.run(rootSaga)
 
 	return store
 }

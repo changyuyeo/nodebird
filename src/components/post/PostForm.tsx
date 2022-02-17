@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
 import { Button, Form, Input } from 'antd'
@@ -25,22 +25,27 @@ const Image = styled.div`
 
 const PostForm = () => {
 	const dispatch = useDispatch()
-	const { imagePaths } = useSelector((state: RootState) => state.post)
+	const { imagePaths, addPostLoading, addPostDone } = useSelector(
+		(state: RootState) => state.post
+	)
 
 	const [text, onChangeText, setText] = useInput('')
 
 	const imageRef = useRef<HTMLInputElement>(null)
 	const textRef = useRef<HTMLTextAreaElement>(null)
 
+	useEffect(() => {
+		if (addPostDone) setText('')
+	}, [addPostDone, setText])
+
 	const onClickImageUpload = useCallback(() => {
 		if (imageRef.current) imageRef.current.click()
 	}, [])
 
 	const onSubmitForm = useCallback(() => {
-		dispatch(addPostAction())
-		setText('')
+		dispatch(addPostAction(text))
 		if (textRef.current) textRef.current.focus()
-	}, [dispatch, setText])
+	}, [dispatch, text])
 
 	return (
 		<FormWrapper onFinish={onSubmitForm}>
@@ -54,7 +59,7 @@ const PostForm = () => {
 			<ButtonGroup>
 				<input ref={imageRef} type="file" multiple hidden />
 				<Button onClick={onClickImageUpload}>이미지 업로드</Button>
-				<Button type="primary" htmlType="submit">
+				<Button type="primary" htmlType="submit" loading={addPostLoading}>
 					짹짹
 				</Button>
 			</ButtonGroup>

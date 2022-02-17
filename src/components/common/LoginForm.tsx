@@ -1,11 +1,12 @@
 import { useCallback } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import Link from 'next/link'
 import styled from 'styled-components'
 import { Button, Form, Input } from 'antd'
 
 import useInput from '@hooks/useInput'
 import { logInAction } from '@store/actions/user'
+import { RootState } from '@store/reducers'
 
 const FormWrapper = styled(Form)`
 	padding: 10px;
@@ -23,6 +24,7 @@ const ButtonWrapper = styled.div`
 
 const LoginForm = () => {
 	const dispatch = useDispatch()
+	const { logInLoading } = useSelector((state: RootState) => state.user)
 
 	const [email, onChangeEmail] = useInput('')
 	const [password, onChangePassword] = useInput('')
@@ -49,7 +51,7 @@ const LoginForm = () => {
 				/>
 			</div>
 			<ButtonWrapper>
-				<Button type="primary" htmlType="submit" loading={false}>
+				<Button type="primary" htmlType="submit" loading={logInLoading}>
 					로그인
 				</Button>
 				<Button>
