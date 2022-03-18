@@ -1,10 +1,13 @@
 # next typescript template
 
-next typescript template
+back-end
+<br />
 
-- next
-- typescript
-- eslint
-- prettier
-- husky
-- lint-staged
+.env
+
+```
+COOKIE_SECRET=...
+DB_PASSOWRD=...
+ORIGIN=...
+PORT=...
+```
