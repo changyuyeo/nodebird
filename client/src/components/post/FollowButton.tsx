@@ -16,15 +16,14 @@ const FollowButton: FC<Props> = ({ post }) => {
 		(state: RootState) => state.user
 	)
 
-	// ? 삭제
-	const isFollowing = me?.Followings?.find((v: any) => v.id === post.User.id)
+	const isFollowing = me?.Followings?.find(v => v.id === post.User.id)
 
 	const onClickFollowButton = useCallback(() => {
 		if (isFollowing) dispatch(unfollowAction(post.User.id))
 		else dispatch(followAction(post.User.id))
 	}, [dispatch, isFollowing, post.User.id])
 
-	return (
+	return post.User.id === me?.id ? null : (
 		<Button
 			onClick={onClickFollowButton}
 			loading={followLoading || unfollowLoading}

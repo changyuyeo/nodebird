@@ -17,7 +17,7 @@ const IndexPage = () => {
 
 	useEffect(() => {
 		dispatch(loadMyInfoAction())
-		// dispatch(loadPostAction())
+		dispatch(loadPostAction())
 	}, [dispatch])
 
 	useEffect(() => {

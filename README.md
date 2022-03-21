@@ -1,4 +1,4 @@
-# next typescript template
+# sns fullstack
 
 back-end
 <br />

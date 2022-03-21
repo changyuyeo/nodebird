@@ -9,4 +9,5 @@ const instance = (url: string) =>
 	})
 
 export const post = instance('post')
+export const posts = instance('posts')
 export const user = instance('user')

@@ -17,3 +17,8 @@ export const fullUserWithoutPassword = async id =>
 			{ model: db.User, as: 'Followers', attributes: ['id'] }
 		]
 	})
+
+//* 유저 닉네임 변경
+export const changeNicknameUser = async (nickname, id) => {
+	await db.User.update({ nickname }, { where: { id } })
+}

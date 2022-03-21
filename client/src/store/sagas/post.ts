@@ -1,10 +1,9 @@
-import { all, call, delay, fork, put, takeLatest } from 'redux-saga/effects'
+import { all, call, fork, put, takeLatest } from 'redux-saga/effects'
 
+import * as apis from '@lib/api/post'
 import * as userActions from '@store/actions/actionTypes/user'
 import * as postActions from '@store/actions/actionTypes/post'
-
-import { addCommentAPI, addPostAPI } from '@lib/api/post'
-import { addCommentActionType, addPostActionType } from '@store/actions/post'
+import * as types from '@store/actions/post'
 
 interface Error {
 	response: {
@@ -12,9 +11,20 @@ interface Error {
 	}
 }
 
-function* addPost(action: addPostActionType) {
+function* loadPost() {
 	try {
-		const { data } = yield call(addPostAPI, action.data)
+		const { data } = yield call(apis.loadPostsAPI)
+		yield put({ type: postActions.LOAD_POSTS_SUCCESS, data })
+	} catch (error) {
+		yield put({
+			type: postActions.LOAD_POSTS_FAILURE
+		})
+	}
+}
+
+function* addPost(action: types.AddPostActionType) {
+	try {
+		const { data } = yield call(apis.addPostAPI, action.payload)
 		yield put({ type: postActions.ADD_POST_SUCCESS, data })
 		yield put({ type: userActions.ADD_POST_TO_ME, data: data.id })
 	} catch (error) {
@@ -25,9 +35,9 @@ function* addPost(action: addPostActionType) {
 	}
 }
 
-function* addComment(action: addCommentActionType) {
+function* addComment(action: types.AddCommentActionType) {
 	try {
-		const { data } = yield call(addCommentAPI, action.data)
+		const { data } = yield call(apis.addCommentAPI, action.payload)
 		yield put({ type: postActions.ADD_COMMENT_SUCCESS, data })
 	} catch (error) {
 		yield put({
@@ -37,17 +47,11 @@ function* addComment(action: addCommentActionType) {
 	}
 }
 
-function* removePost(action: any) {
+function* removePost(action: types.RemovePostActionType) {
 	try {
-		yield delay(1000)
-		yield put({
-			type: postActions.REMOVE_POST_SUCCESS,
-			data: action.data
-		})
-		yield put({
-			type: userActions.REMOVE_POST_OF_ME,
-			data: action.data
-		})
+		const { data } = yield call(apis.removePostAPI, action.payload)
+		yield put({ type: postActions.REMOVE_POST_SUCCESS, data })
+		yield put({ type: userActions.REMOVE_POST_OF_ME, data })
 	} catch (error) {
 		yield put({
 			type: postActions.REMOVE_POST_FAILURE,
@@ -56,20 +60,35 @@ function* removePost(action: any) {
 	}
 }
 
-function* loadPost() {
+function* likePost(action: types.LikePostActionType) {
 	try {
-		yield delay(2000)
-		yield put({
-			type: postActions.LOAD_POSTS_SUCCESS
-		})
+		const { data } = yield call(apis.likePostAPI, action.payload)
+		yield put({ type: postActions.LIKE_POST_SUCCESS, data })
 	} catch (error) {
 		yield put({
-			type: postActions.LOAD_POSTS_FAILURE
+			type: postActions.LIKE_POST_FAILURE,
+			error: (error as Error).response.data
+		})
+	}
+}
+
+function* unLikePost(action: types.UnLikePostActionType) {
+	try {
+		const { data } = yield call(apis.unLikePostAPI, action.payload)
+		yield put({ type: postActions.UN_LIKE_POST_SUCCESS, data })
+	} catch (error) {
+		yield put({
+			type: postActions.UN_LIKE_POST_FAILURE,
+			error: (error as Error).response.data
 		})
 	}
 }
 
 //* watch
+function* watchLoadPost() {
+	yield takeLatest(postActions.LOAD_POSTS_REQUEST, loadPost)
+}
+
 function* watchAddPost() {
 	yield takeLatest(postActions.ADD_POST_REQUEST, addPost)
 }
@@ -82,15 +101,21 @@ function* watchRemovePost() {
 	yield takeLatest(postActions.REMOVE_POST_REQUEST, removePost)
 }
 
-function* watchLoadPost() {
-	yield takeLatest(postActions.LOAD_POSTS_REQUEST, loadPost)
+function* watchLikePost() {
+	yield takeLatest(postActions.LIKE_POST_REQUEST, likePost)
+}
+
+function* watchUnLikePost() {
+	yield takeLatest(postActions.UNLIKE_POST_REQUEST, unLikePost)
 }
 
 export default function* postSaga() {
 	yield all([
+		fork(watchLoadPost),
 		fork(watchAddPost),
 		fork(watchAddComment),
 		fork(watchRemovePost),
-		fork(watchLoadPost)
+		fork(watchLikePost),
+		fork(watchUnLikePost)
 	])
 }

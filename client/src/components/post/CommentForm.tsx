@@ -15,7 +15,7 @@ const FormWrapper = styled.div`
 `
 
 interface Props {
-	postId: string
+	postId: number
 }
 
 const CommentForm: FC<Props> = ({ postId }) => {

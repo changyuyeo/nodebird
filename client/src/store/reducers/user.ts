@@ -17,7 +17,6 @@ const initialState: UserState = {
 	logOutLoading: false,
 	logOutDone: false,
 	logOutError: null,
-
 	changeNicknameLoading: false,
 	changeNicknameDone: false,
 	changeNicknameError: null,
@@ -27,6 +26,15 @@ const initialState: UserState = {
 	unfollowLoading: false,
 	unfollowDone: false,
 	unfollowError: null,
+	loadFollowingsLoading: false,
+	loadFollowingsDone: false,
+	loadFollowingsError: null,
+	loadFollowersLoading: false,
+	loadFollowersDone: false,
+	loadFollowersError: null,
+	removeFollowerLoading: false,
+	removeFollowerDone: false,
+	removeFollowerError: null,
 	me: null
 }
 
@@ -101,6 +109,7 @@ const userReducers = (state = initialState, action: AnyAction) =>
 			case actions.CHANGE_NICKNAME_SUCCESS:
 				draft.changeNicknameLoading = false
 				draft.changeNicknameDone = true
+				draft.me && (draft.me.nickname = action.data.nickname)
 				break
 			case actions.CHANGE_NICKNAME_FAILURE:
 				draft.changeNicknameLoading = false
@@ -115,7 +124,7 @@ const userReducers = (state = initialState, action: AnyAction) =>
 			case actions.FOLLOW_SUCCESS:
 				draft.followLoading = false
 				draft.followDone = true
-				draft.me && draft.me.Followings?.push({ id: action.data })
+				draft.me && draft.me.Followings?.push({ id: action.data.UserId })
 				break
 			case actions.FOLLOW_FAILURE:
 				draft.followLoading = false
@@ -132,12 +141,60 @@ const userReducers = (state = initialState, action: AnyAction) =>
 				draft.unfollowDone = true
 				draft.me &&
 					(draft.me.Followings = draft.me.Followings?.filter(
-						(v: any) => v.id !== action.data
+						v => v.id !== action.data.UserId
 					))
 				break
 			case actions.UNFOLLOW_FAILURE:
 				draft.unfollowLoading = false
 				draft.unfollowError = action.error
+				break
+			//* LOAD_FOLLOWERS
+			case actions.LOAD_FOLLOWERS_REQUEST:
+				draft.loadFollowersLoading = true
+				draft.loadFollowersDone = false
+				draft.loadFollowersError = null
+				break
+			case actions.LOAD_FOLLOWERS_SUCCESS:
+				draft.loadFollowersLoading = false
+				draft.loadFollowersDone = true
+				draft.me && (draft.me.Followers = action.data)
+				break
+			case actions.LOAD_FOLLOWERS_FAILURE:
+				draft.loadFollowersLoading = false
+				draft.loadFollowersError = action.error
+				break
+			//* LOAD_FOLLOWINGS
+			case actions.LOAD_FOLLOWINGS_REQUEST:
+				draft.loadFollowingsLoading = true
+				draft.loadFollowingsDone = false
+				draft.loadFollowingsError = null
+				break
+			case actions.LOAD_FOLLOWINGS_SUCCESS:
+				draft.loadFollowingsLoading = false
+				draft.loadFollowingsDone = true
+				draft.me && (draft.me.Followings = action.data)
+				break
+			case actions.LOAD_FOLLOWINGS_FAILURE:
+				draft.loadFollowingsLoading = false
+				draft.loadFollowingsError = action.error
+				break
+			//* REMOVE_FOLLOWER
+			case actions.REMOVE_FOLLOWER_REQUEST:
+				draft.removeFollowerLoading = true
+				draft.removeFollowerDone = false
+				draft.removeFollowerError = null
+				break
+			case actions.REMOVE_FOLLOWER_SUCCESS:
+				draft.removeFollowerLoading = false
+				draft.removeFollowerDone = true
+				draft.me &&
+					(draft.me.Followers = draft.me.Followers?.filter(
+						v => v.id !== action.data.UserId
+					))
+				break
+			case actions.REMOVE_FOLLOWER_FAILURE:
+				draft.removeFollowerLoading = false
+				draft.removeFollowerError = action.error
 				break
 			//* POST_ME
 			case actions.ADD_POST_TO_ME:
@@ -146,7 +203,7 @@ const userReducers = (state = initialState, action: AnyAction) =>
 			case actions.REMOVE_POST_OF_ME:
 				draft.me &&
 					(draft.me.Posts = draft.me.Posts?.filter(
-						(v: any) => v.id !== action.data
+						v => v.id !== action.data.PostId
 					))
 				break
 			default:

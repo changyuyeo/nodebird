@@ -11,19 +11,23 @@ import {
 } from '@ant-design/icons'
 
 import { RootState } from '@store/reducers'
-import { removePostAction } from '@store/actions/post'
-import { IMainPostData } from '@store/types/post'
 import PostImages from '@components/post/PostImages'
 import CommentForm from '@components/post/CommentForm'
 import PostCardContent from '@components/post/PostCardContent'
 import FollowButton from '@components/post/FollowButton'
+import {
+	likePostAction,
+	removePostAction,
+	unLikePostAction
+} from '@store/actions/post'
+import { PostDataType } from '@typings/post'
 
 const CardWrapper = styled.div`
 	margin-bottom: 20px;
 `
 
 interface Props {
-	post: IMainPostData
+	post: PostDataType
 }
 
 const PostCard: FC<Props> = ({ post }) => {
@@ -31,10 +35,17 @@ const PostCard: FC<Props> = ({ post }) => {
 	const id = useSelector((state: RootState) => state.user.me?.id)
 	const { removePostLoading } = useSelector((state: RootState) => state.post)
 
-	const [liked, setLiked] = useState(false)
 	const [commentFormOpened, setCommentFormOpened] = useState(false)
 
-	const onToggleLike = useCallback(() => setLiked(prev => !prev), [])
+	const onLike = useCallback(
+		() => dispatch(likePostAction(post.id)),
+		[dispatch, post.id]
+	)
+
+	const onUnLike = useCallback(
+		() => dispatch(unLikePostAction(post.id)),
+		[dispatch, post.id]
+	)
 
 	const onToggleComment = useCallback(
 		() => setCommentFormOpened(prev => !prev),
@@ -44,6 +55,8 @@ const PostCard: FC<Props> = ({ post }) => {
 	const onRemovePost = useCallback(() => {
 		dispatch(removePostAction(post.id))
 	}, [dispatch, post.id])
+
+	const liked = post.Likers.find(v => v.id === id)
 
 	return (
 		<CardWrapper>
@@ -55,10 +68,10 @@ const PostCard: FC<Props> = ({ post }) => {
 						<HeartTwoTone
 							key="heart"
 							twoToneColor="#eb2f96"
-							onClick={onToggleLike}
+							onClick={onUnLike}
 						/>
 					) : (
-						<HeartOutlined key="heart" onClick={onToggleLike} />
+						<HeartOutlined key="heart" onClick={onLike} />
 					),
 					<MessageOutlined key="comment" onClick={onToggleComment} />,
 					<Popover
@@ -84,7 +97,9 @@ const PostCard: FC<Props> = ({ post }) => {
 				extra={id && <FollowButton post={post} />}
 			>
 				<Card.Meta
-					avatar={<Avatar>{post.User.nickname[0]}</Avatar>}
+					avatar={
+						<Avatar>{post.User.nickname && post.User.nickname[0]}</Avatar>
+					}
 					title={post.User.nickname}
 					description={<PostCardContent postData={post.content} />}
 				/>
@@ -100,7 +115,11 @@ const PostCard: FC<Props> = ({ post }) => {
 							<li key={index}>
 								<Comment
 									author={item.User.nickname}
-									avatar={<Avatar>{item.User.nickname[0]}</Avatar>}
+									avatar={
+										<Avatar>
+											{item.User.nickname && item.User.nickname[0]}
+										</Avatar>
+									}
 									content={item.content}
 								/>
 							</li>

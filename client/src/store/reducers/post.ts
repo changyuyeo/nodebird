@@ -5,6 +5,9 @@ import * as actions from '@store/actions/actionTypes/post'
 import { PostState } from '@typings/reduxState'
 
 const initialState: PostState = {
+	loadPostsLoading: false,
+	loadPostsDone: false,
+	loadPostsError: null,
 	addPostLoading: false,
 	addPostDone: false,
 	addPostError: null,
@@ -14,9 +17,12 @@ const initialState: PostState = {
 	removePostLoading: false,
 	removePostDone: false,
 	removePostError: null,
-	loadPostsLoading: false,
-	loadPostsDone: false,
-	loadPostsError: null,
+	likePostLoading: false,
+	likePostDone: false,
+	likePostError: null,
+	unLikePostLoading: false,
+	unLikePostDone: false,
+	unLikePostError: null,
 	mainPosts: [],
 	imagePaths: [],
 	hasMorePost: true
@@ -25,6 +31,22 @@ const initialState: PostState = {
 const postReducer = (state = initialState, action: AnyAction) =>
 	produce(state, draft => {
 		switch (action.type) {
+			//* LOAD_POSTS
+			case actions.LOAD_POSTS_REQUEST:
+				draft.loadPostsLoading = true
+				draft.loadPostsDone = false
+				draft.loadPostsError = null
+				break
+			case actions.LOAD_POSTS_SUCCESS:
+				draft.loadPostsLoading = false
+				draft.loadPostsDone = true
+				draft.mainPosts = action.data.concat(draft.mainPosts)
+				draft.hasMorePost = draft.mainPosts.length < 50
+				break
+			case actions.LOAD_POSTS_FAILURE:
+				draft.loadPostsLoading = false
+				draft.loadPostsError = action.error
+				break
 			//* ADD_POST
 			case actions.ADD_POST_REQUEST:
 				draft.addPostLoading = true
@@ -45,12 +67,14 @@ const postReducer = (state = initialState, action: AnyAction) =>
 				draft.addCommentLoading = true
 				draft.addCommentDone = false
 				break
-			case actions.ADD_COMMENT_SUCCESS:
+			case actions.ADD_COMMENT_SUCCESS: {
+				console.log(action.data)
 				draft.addCommentLoading = false
 				draft.addCommentDone = true
 				const post = draft.mainPosts.find(v => v.id === action.data.PostId)
 				post && post.Comments.unshift(action.data)
 				break
+			}
 			case actions.ADD_COMMENT_FAILURE:
 				draft.addCommentLoading = false
 				draft.addCommentError = action.error
@@ -64,27 +88,49 @@ const postReducer = (state = initialState, action: AnyAction) =>
 			case actions.REMOVE_POST_SUCCESS:
 				draft.removePostLoading = false
 				draft.removePostDone = true
-				draft.mainPosts = draft.mainPosts.filter(v => v.id !== action.data)
+				draft.mainPosts = draft.mainPosts.filter(
+					v => v.id !== action.data.PostId
+				)
 				break
 			case actions.REMOVE_POST_FAILURE:
 				draft.removePostLoading = false
 				draft.removePostError = action.error
 				break
-			//* LOAD_POSTS
-			case actions.LOAD_POSTS_REQUEST:
-				draft.loadPostsLoading = true
-				draft.loadPostsDone = false
-				draft.loadPostsError = null
+			//* LIKE_POST
+			case actions.LIKE_POST_REQUEST:
+				draft.likePostLoading = true
+				draft.likePostDone = false
+				draft.likePostError = null
 				break
-			case actions.LOAD_POSTS_SUCCESS:
-				draft.loadPostsLoading = false
-				draft.loadPostsDone = true
-				draft.mainPosts = action.data.concat(draft.mainPosts)
-				draft.hasMorePost = draft.mainPosts.length < 50
+			case actions.LIKE_POST_SUCCESS: {
+				draft.likePostLoading = false
+				draft.likePostDone = true
+				const post = draft.mainPosts.find(v => v.id === action.data.PostId)
+				post && post.Likers.push({ id: action.data.UserId })
 				break
-			case actions.LOAD_POSTS_FAILURE:
-				draft.loadPostsLoading = false
-				draft.loadPostsError = action.error
+			}
+			case actions.LIKE_POST_FAILURE:
+				draft.likePostLoading = false
+				draft.likePostError = action.error
+				break
+			//* UN_LIKE_POST
+			case actions.UNLIKE_POST_REQUEST:
+				draft.unLikePostLoading = true
+				draft.unLikePostDone = false
+				draft.unLikePostError = null
+				break
+			case actions.UN_LIKE_POST_SUCCESS:
+				{
+					draft.unLikePostLoading = false
+					draft.unLikePostDone = true
+					const post = draft.mainPosts.find(v => v.id === action.data.PostId)
+					post &&
+						(post.Likers = post.Likers.filter(v => v.id !== action.data.UserId))
+				}
+				break
+			case actions.UN_LIKE_POST_FAILURE:
+				draft.unLikePostLoading = false
+				draft.unLikePostError = action.error
 				break
 			default:
 				break

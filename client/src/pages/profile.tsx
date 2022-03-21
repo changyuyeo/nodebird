@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import Router from 'next/router'
 import Head from 'next/head'
 
@@ -7,9 +7,16 @@ import AppLayout from '@components/layout/AppLayout'
 import NicknameForm from '@components/profile/NicknameForm'
 import FollowList from '@components/profile/FollowList'
 import { RootState } from '@store/reducers'
+import { loadFollowersAction, loadFollowingsAction } from '@store/actions/user'
 
 const ProfilePage = () => {
+	const dispatch = useDispatch()
 	const { me } = useSelector((state: RootState) => state.user)
+
+	useEffect(() => {
+		dispatch(loadFollowersAction())
+		dispatch(loadFollowingsAction())
+	}, [dispatch])
 
 	useEffect(() => {
 		if (!(me && me.id)) Router.push('/')

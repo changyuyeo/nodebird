@@ -1,7 +1,11 @@
-import { FC, useMemo } from 'react'
+import { FC, useCallback, useMemo } from 'react'
+import { useDispatch } from 'react-redux'
 import styled from 'styled-components'
 import { Button, Card, List } from 'antd'
 import { StopOutlined } from '@ant-design/icons'
+
+import { removeFollowerAction, unfollowAction } from '@store/actions/user'
+import { UserDataType } from '@typings/user'
 
 const ListWrapper = styled(List)`
 	margin-bottom: 20px;
@@ -17,13 +21,21 @@ const ListItem = styled(List.Item)`
 `
 
 interface Props {
-	header: string
-	data: {
-		nickname: string
-	}[]
+	header: '팔로잉 목록' | '팔로워 목록'
+	data?: UserDataType[]
 }
 
 const FollowList: FC<Props> = ({ header, data }) => {
+	const dispatch = useDispatch()
+
+	const onClickUnFollow = useCallback(
+		(id: number) => () =>
+			header === '팔로잉 목록'
+				? dispatch(unfollowAction(id))
+				: dispatch(removeFollowerAction(id)),
+		[dispatch, header]
+	)
+
 	const listGrid = useMemo(() => ({ gutter: 4, xs: 2, md: 3 }), [])
 
 	return (
@@ -40,7 +52,10 @@ const FollowList: FC<Props> = ({ header, data }) => {
 			dataSource={data}
 			renderItem={(item, index) => (
 				<ListItem key={index}>
-					<Card actions={[<StopOutlined key="stop" />]}>
+					<Card
+						actions={[<StopOutlined key="stop" />]}
+						onClick={onClickUnFollow((item as UserDataType).id)}
+					>
 						<Card.Meta description={(item as { nickname: string }).nickname} />
 					</Card>
 				</ListItem>

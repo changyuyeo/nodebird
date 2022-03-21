@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt'
 import passport from 'passport'
 
 import {
+	changeNicknameUser,
 	createUser,
 	existsUser,
 	fullUserWithoutPassword
@@ -54,4 +55,86 @@ export const logOutService = (req, res) => {
 	req.logout()
 	req.session.destroy()
 	return res.status(200).json({ message: 'success' })
+}
+
+//* user 닉네임변경
+export const changeNicknameService = async (req, res, next) => {
+	try {
+		const { nickname } = req.body
+		await changeNicknameUser(nickname, req.user.id)
+		return res.status(200).json({ nickname })
+	} catch (error) {
+		console.error(error.message)
+		next(error)
+	}
+}
+
+//* user 팔로우
+export const followService = async (req, res, next) => {
+	try {
+		const user = await existsUser({ id: req.params.userId })
+		if (!user)
+			return res.status(403).json({ message: '유저가 존재하지 않습니다.' })
+		await user.addFollowers(req.user.id)
+		return res.status(200).json({ UserId: parseInt(req.params.userId, 10) })
+	} catch (error) {
+		console.error(error)
+		next(error)
+	}
+}
+
+//* user 언팔로우
+export const unFollowService = async (req, res, next) => {
+	try {
+		const user = await existsUser({ id: req.params.userId })
+		if (!user)
+			return res.status(403).json({ message: '유저가 존재하지 않습니다.' })
+		await user.removeFollowers(req.user.id)
+		return res.status(200).json({ UserId: parseInt(req.params.userId, 10) })
+	} catch (error) {
+		console.error(error)
+		next(error)
+	}
+}
+
+//* followers 불러오기
+export const loadFollowersService = async (req, res, next) => {
+	try {
+		const user = await existsUser({ id: req.user.id })
+		if (!user)
+			return res.status(403).json({ message: '유저가 존재하지 않습니다.' })
+		const followers = await user.getFollowers()
+		return res.status(200).json(followers)
+	} catch (error) {
+		console.error(error)
+		next(error)
+	}
+}
+
+//* followings 불러오기
+export const loadFollowingsService = async (req, res, next) => {
+	try {
+		const user = await existsUser({ id: req.user.id })
+		if (!user)
+			return res.status(403).json({ message: '유저가 존재하지 않습니다.' })
+		const followings = await user.getFollowings()
+		return res.status(200).json(followings)
+	} catch (error) {
+		console.error(error)
+		next(error)
+	}
+}
+
+//* follower 차단
+export const removeFollowerService = async (req, res, next) => {
+	try {
+		const user = await existsUser({ id: req.params.userId })
+		if (!user)
+			return res.status(403).json({ message: '유저가 존재하지 않습니다.' })
+		await user.removeFollowings(req.user.id)
+		return res.status(200).json({ UserId: parseInt(req.params.userId, 10) })
+	} catch (error) {
+		console.error(error)
+		next(error)
+	}
 }
