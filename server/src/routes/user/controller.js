@@ -1,5 +1,6 @@
 import express from 'express'
 
+import { isLoggedIn, isNotLoggedIn } from '../../middleware/auth.js'
 import {
 	signUpService,
 	logInService,
@@ -12,7 +13,6 @@ import {
 	loadFollowingsService,
 	removeFollowerService
 } from './service.js'
-import { isLoggedIn, isNotLoggedIn } from '../../middleware/auth.js'
 
 const router = express.Router()
 

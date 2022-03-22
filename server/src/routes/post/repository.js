@@ -1,11 +1,12 @@
 import db from '../../models/index.js'
 
-//* db에 해당 게시글 있는지 검사
-export const existsPost = async id => await db.Post.findOne({ where: { id } })
-
 //* 게시글 가져오기
-export const loadAllPost = async () =>
+export const existsPost = async data => await db.Post.findOne({ where: data })
+
+//* 게시글 모두 가져오기
+export const loadAllPost = async where =>
 	await db.Post.findAll({
+		where,
 		limit: 10,
 		order: [
 			['createdAt', 'DESC'],
@@ -60,4 +61,40 @@ export const fullComment = async id =>
 	await db.Comment.findOne({
 		where: { id },
 		include: [{ model: db.User, attributes: ['id', 'nickname'] }]
+	})
+
+//* 이미지 저장
+export const createImage = async src => await db.Image.create({ src })
+
+//* 해쉬태그 생성
+export const createHashtag = async name =>
+	await db.Hashtag.findOrCreate({ where: { name } })
+
+//* 게시글 가져오면서 데이터 가공 (리트윗)
+export const retweetPost = async id =>
+	await db.Post.findOne({
+		where: { id },
+		include: [{ model: db.Post, as: 'Retweet' }]
+	})
+
+//* 게시글 데이터 가공 (리트윗)
+export const retweetFullPost = async id =>
+	await db.Post.findOne({
+		where: { id },
+		include: [
+			{
+				model: db.Post,
+				as: 'Retweet',
+				include: [
+					{ model: db.User, attributes: ['id', 'nickname'] },
+					{ model: db.Image }
+				]
+			},
+			{ model: db.User, attributes: ['id', 'nickname'] },
+			{ model: db.Image },
+			{
+				model: db.Comment,
+				include: [{ model: db.User, attributes: ['id', 'nickname'] }]
+			}
+		]
 	})

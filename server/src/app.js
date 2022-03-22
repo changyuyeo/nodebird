@@ -4,6 +4,7 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import passport from 'passport'
 import morgan from 'morgan'
+import path from 'path'
 
 import db from './models/index.js'
 import passportConfig from './passport/index.js'
@@ -30,6 +31,8 @@ class Server {
 			resave: false,
 			secret: COOKIE_SECRET
 		}
+		const __dirname = path.resolve()
+		this.app.use('/', express.static(path.join(__dirname, 'uploads')))
 		this.app.use(express.json())
 		this.app.use(express.urlencoded({ extended: true }))
 		this.app.use(cors({ origin: ORIGIN, credentials: true }))
