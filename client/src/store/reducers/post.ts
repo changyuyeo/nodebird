@@ -23,6 +23,12 @@ const initialState: PostState = {
 	unLikePostLoading: false,
 	unLikePostDone: false,
 	unLikePostError: null,
+	uploadImagesLoading: false,
+	uploadImagesDone: false,
+	uploadImagesError: null,
+	retweetLoading: false,
+	retweetDone: false,
+	retweetError: null,
 	mainPosts: [],
 	imagePaths: [],
 	hasMorePost: true
@@ -40,8 +46,8 @@ const postReducer = (state = initialState, action: AnyAction) =>
 			case actions.LOAD_POSTS_SUCCESS:
 				draft.loadPostsLoading = false
 				draft.loadPostsDone = true
-				draft.mainPosts = action.data.concat(draft.mainPosts)
-				draft.hasMorePost = draft.mainPosts.length < 50
+				draft.mainPosts = draft.mainPosts.concat(action.data)
+				draft.hasMorePost = action.data.length === 10
 				break
 			case actions.LOAD_POSTS_FAILURE:
 				draft.loadPostsLoading = false
@@ -57,6 +63,7 @@ const postReducer = (state = initialState, action: AnyAction) =>
 				draft.addPostLoading = false
 				draft.addPostDone = true
 				draft.mainPosts.unshift(action.data)
+				draft.imagePaths = []
 				break
 			case actions.ADD_POST_FAILURE:
 				draft.addPostLoading = false
@@ -131,6 +138,40 @@ const postReducer = (state = initialState, action: AnyAction) =>
 			case actions.UN_LIKE_POST_FAILURE:
 				draft.unLikePostLoading = false
 				draft.unLikePostError = action.error
+				break
+			//* UPLOAD_IMAGES
+			case actions.UPLOAD_IMAGES_REQUEST:
+				draft.uploadImagesLoading = true
+				draft.uploadImagesDone = false
+				draft.uploadImagesError = null
+				break
+			case actions.UPLOAD_IMAGES_SUCCESS:
+				draft.uploadImagesLoading = false
+				draft.uploadImagesDone = true
+				draft.imagePaths = action.data
+				break
+			case actions.UPLOAD_IMAGES_FAILURE:
+				draft.uploadImagesLoading = false
+				draft.uploadImagesError = action.error
+				break
+			//* RETWEET
+			case actions.RETWEET_REQUEST:
+				draft.retweetLoading = true
+				draft.retweetDone = false
+				draft.retweetError = null
+				break
+			case actions.RETWEET_SUCCESS:
+				draft.retweetLoading = false
+				draft.retweetDone = true
+				draft.mainPosts.unshift(action.data)
+				break
+			case actions.RETWEET_FAILURE:
+				draft.retweetLoading = false
+				draft.retweetError = action.error
+				break
+			//* REMOVE_IMAGE
+			case actions.REMOVE_IMAGE:
+				draft.imagePaths = draft.imagePaths.filter((_, i) => i !== action.data)
 				break
 			default:
 				break

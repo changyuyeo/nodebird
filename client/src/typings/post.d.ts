@@ -6,12 +6,12 @@ export interface PostDataType {
 	createdAt: string
 	updatedAt: string
 	UserId: number
-	RetweetId: null
+	RetweetId: number
 	User: UserDataType
 	Images: Array<any>
 	Comments: Array<CommentDataType>
 	Likers: Array<{ id: number }>
-	Retweet?: null
+	Retweet?: PostDataType
 }
 
 export interface CommentDataType {

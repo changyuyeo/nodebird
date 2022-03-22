@@ -1,4 +1,4 @@
-import { FC, useCallback, useState } from 'react'
+import { FC, useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
 import { Avatar, Button, Card, Comment, List, Popover } from 'antd'
@@ -18,6 +18,7 @@ import FollowButton from '@components/post/FollowButton'
 import {
 	likePostAction,
 	removePostAction,
+	retweetAction,
 	unLikePostAction
 } from '@store/actions/post'
 import { PostDataType } from '@typings/post'
@@ -37,33 +38,39 @@ const PostCard: FC<Props> = ({ post }) => {
 
 	const [commentFormOpened, setCommentFormOpened] = useState(false)
 
-	const onLike = useCallback(
-		() => dispatch(likePostAction(post.id)),
-		[dispatch, post.id]
-	)
+	const onLike = useCallback(() => {
+		if (!id) return alert('로그인이 필요합니다.')
+		return dispatch(likePostAction(post.id))
+	}, [dispatch, id, post.id])
 
-	const onUnLike = useCallback(
-		() => dispatch(unLikePostAction(post.id)),
-		[dispatch, post.id]
-	)
+	const onUnLike = useCallback(() => {
+		if (!id) return alert('로그인이 필요합니다.')
+		return dispatch(unLikePostAction(post.id))
+	}, [dispatch, id, post.id])
+
+	const onRemovePost = useCallback(() => {
+		if (!id) return alert('로그인이 필요합니다.')
+		return dispatch(removePostAction(post.id))
+	}, [dispatch, id, post.id])
+
+	const onRetweet = useCallback(() => {
+		if (!id) return alert('로그인이 필요합니다.')
+		return dispatch(retweetAction(post.id))
+	}, [dispatch, id, post.id])
 
 	const onToggleComment = useCallback(
 		() => setCommentFormOpened(prev => !prev),
 		[]
 	)
 
-	const onRemovePost = useCallback(() => {
-		dispatch(removePostAction(post.id))
-	}, [dispatch, post.id])
-
-	const liked = post.Likers.find(v => v.id === id)
+	const liked = post.Likers?.find(v => v.id === id)
 
 	return (
 		<CardWrapper>
 			<Card
 				cover={post.Images[0] && <PostImages images={post.Images} />}
 				actions={[
-					<RetweetOutlined key="retweet" />,
+					<RetweetOutlined key="retweet" onClick={onRetweet} />,
 					liked ? (
 						<HeartTwoTone
 							key="heart"
@@ -94,15 +101,38 @@ const PostCard: FC<Props> = ({ post }) => {
 						<EllipsisOutlined />
 					</Popover>
 				]}
+				title={
+					post.RetweetId ? `${post.User.nickname}님이 리트윗하셨습니다.` : null
+				}
 				extra={id && <FollowButton post={post} />}
 			>
-				<Card.Meta
-					avatar={
-						<Avatar>{post.User.nickname && post.User.nickname[0]}</Avatar>
-					}
-					title={post.User.nickname}
-					description={<PostCardContent postData={post.content} />}
-				/>
+				{post.RetweetId && post.Retweet ? (
+					<Card
+						cover={
+							post.Retweet.Images[0] && (
+								<PostImages images={post.Retweet.Images} />
+							)
+						}
+					>
+						<Card.Meta
+							avatar={
+								<Avatar>
+									{post.Retweet.User.nickname && post.Retweet.User.nickname[0]}
+								</Avatar>
+							}
+							title={post.Retweet.User.nickname}
+							description={<PostCardContent postData={post.Retweet.content} />}
+						/>
+					</Card>
+				) : (
+					<Card.Meta
+						avatar={
+							<Avatar>{post.User.nickname && post.User.nickname[0]}</Avatar>
+						}
+						title={post.User.nickname}
+						description={<PostCardContent postData={post.content} />}
+					/>
+				)}
 			</Card>
 			{commentFormOpened && (
 				<div>

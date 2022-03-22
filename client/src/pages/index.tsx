@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import AppLayout from '@components/layout/AppLayout'
@@ -11,9 +11,12 @@ import { loadMyInfoAction } from '@store/actions/user'
 const IndexPage = () => {
 	const dispatch = useDispatch()
 	const { me } = useSelector((state: RootState) => state.user)
-	const { mainPosts, hasMorePost, loadPostsLoading } = useSelector(
-		(state: RootState) => state.post
-	)
+	const { mainPosts, hasMorePost, loadPostsLoading, retweetError } =
+		useSelector((state: RootState) => state.post)
+
+	useEffect(() => {
+		if (retweetError) alert(retweetError)
+	}, [retweetError])
 
 	useEffect(() => {
 		dispatch(loadMyInfoAction())
@@ -24,12 +27,16 @@ const IndexPage = () => {
 		const onScroll = () => {
 			const { clientHeight, scrollHeight } = document.documentElement
 			if (window.scrollY + clientHeight > scrollHeight - 300) {
-				if (hasMorePost && !loadPostsLoading) dispatch(loadPostAction())
+				if (hasMorePost && !loadPostsLoading) {
+					const lastId = mainPosts[mainPosts.length - 1]?.id
+					console.log(lastId)
+					dispatch(loadPostAction(lastId))
+				}
 			}
 		}
 		window.addEventListener('scroll', onScroll)
 		return () => window.removeEventListener('scroll', onScroll)
-	}, [dispatch, hasMorePost, loadPostsLoading])
+	}, [dispatch, hasMorePost, loadPostsLoading, mainPosts])
 
 	return (
 		<AppLayout>

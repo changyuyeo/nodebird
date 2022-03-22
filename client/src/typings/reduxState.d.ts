@@ -54,6 +54,12 @@ export interface PostState {
 	unLikePostLoading: boolean
 	unLikePostDone: boolean
 	unLikePostError: string | null
+	uploadImagesLoading: boolean
+	uploadImagesDone: boolean
+	uploadImagesError: string | null
+	retweetLoading: boolean
+	retweetDone: boolean
+	retweetError: string | null
 	mainPosts: PostDataType[]
 	imagePaths: string[]
 	hasMorePost: boolean

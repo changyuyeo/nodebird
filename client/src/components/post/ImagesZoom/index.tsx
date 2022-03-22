@@ -10,6 +10,7 @@ import {
 	Indicator,
 	Global
 } from '@components/post/ImagesZoom/styles'
+import { BASE_URL } from '@lib/api'
 
 interface Props {
 	images: { src: string }[]
@@ -38,7 +39,7 @@ const ImagesZoom: FC<Props> = ({ images, onClose }) => {
 					>
 						{images.map(v => (
 							<ImgWrapper key={v.src}>
-								<img src={v.src} alt={v.src} />
+								<img src={`${BASE_URL}/${v.src}`} alt={v.src} />
 							</ImgWrapper>
 						))}
 					</Slick>

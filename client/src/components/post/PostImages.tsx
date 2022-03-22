@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { PlusOutlined } from '@ant-design/icons'
 
 import ImagesZoom from '@components/post/ImagesZoom'
+import { BASE_URL } from '@lib/api'
 
 const HalfImage = styled.img`
 	display: inline-block;
@@ -31,8 +32,8 @@ const PostImages: FC<Props> = ({ images }) => {
 		return (
 			<>
 				<img
-					src={images[0].src}
-					alt={images[0].src}
+					src={`${BASE_URL}/${images[0].src}`}
+					alt={`${BASE_URL}/${images[0].src}`}
 					onClick={onZoom}
 					role="presentation"
 				/>
@@ -45,14 +46,14 @@ const PostImages: FC<Props> = ({ images }) => {
 		return (
 			<>
 				<HalfImage
-					src={images[0].src}
-					alt={images[0].src}
+					src={`${BASE_URL}/${images[0].src}`}
+					alt={`${BASE_URL}/${images[0].src}`}
 					onClick={onZoom}
 					role="presentation"
 				/>
 				<HalfImage
-					src={images[1].src}
-					alt={images[1].src}
+					src={`${BASE_URL}/${images[1].src}`}
+					alt={`${BASE_URL}/${images[1].src}`}
 					onClick={onZoom}
 					role="presentation"
 				/>
@@ -65,8 +66,8 @@ const PostImages: FC<Props> = ({ images }) => {
 		<>
 			<div>
 				<HalfImage
-					src={images[0].src}
-					alt={images[0].src}
+					src={`${BASE_URL}/${images[0].src}`}
+					alt={`${BASE_URL}/${images[0].src}`}
 					role="presentation"
 				/>
 				<MoreBox onClick={onZoom} role="presentation">
