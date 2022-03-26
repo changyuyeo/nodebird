@@ -5,6 +5,8 @@ import cookieParser from 'cookie-parser'
 import passport from 'passport'
 import morgan from 'morgan'
 import path from 'path'
+import hpp from 'hpp'
+import helmet from 'helmet'
 
 import db from './models/index.js'
 import passportConfig from './passport/index.js'
@@ -32,6 +34,13 @@ class Server {
 			secret: COOKIE_SECRET
 		}
 		const __dirname = path.resolve()
+		if (process.env.NODE_ENV === 'production') {
+			this.app.use(morgan('combined'))
+			this.app.use(hpp())
+			this.app.use(helmet())
+		} else {
+			this.app.use(morgan('dev'))
+		}
 		this.app.use('/', express.static(path.join(__dirname, 'uploads')))
 		this.app.use(express.json())
 		this.app.use(express.urlencoded({ extended: true }))
@@ -40,7 +49,6 @@ class Server {
 		this.app.use(session(sessionConfig))
 		this.app.use(passport.initialize())
 		this.app.use(passport.session())
-		this.app.use(morgan('dev'))
 		this.setRoute()
 	}
 
