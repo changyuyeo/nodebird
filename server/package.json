@@ -5,7 +5,8 @@
 	"description": "nodebird_server",
 	"main": "src/app.js",
 	"scripts": {
-		"dev": "npx nodemon --exec babel-node src/app.js"
+		"dev": "npx nodemon --exec babel-node src/app.js",
+		"start": "node src/app.js"
 	},
 	"keywords": [],
 	"author": "",
