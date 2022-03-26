@@ -11,7 +11,7 @@ import { RootState } from '@store/reducers'
 import { loadHashtagPostsAction } from '@store/actions/post'
 import { loadMyInfoAction } from '@store/actions/user'
 
-const Hashtag = () => {
+const HashtagPage = () => {
 	const dispatch = useDispatch()
 	const router = useRouter()
 	const { tag } = router.query
@@ -65,4 +65,4 @@ export const getServerSideProps = wrapper.getServerSideProps(
 		}
 )
 
-export default Hashtag
+export default HashtagPage
