@@ -130,3 +130,17 @@ export const retweetService = async (req, res, next) => {
 		next(error)
 	}
 }
+
+//* 게시물 하나 불러오기
+export const loadPostService = async (req, res, next) => {
+	try {
+		const post = await existsPost({ id: req.params.postId })
+		if (!post)
+			return res.status(403).json({ message: '존재하지 않는 게시글입니다.' })
+		const postData = await fullPost(post.id)
+		return res.status(201).json(postData)
+	} catch (error) {
+		console.error(error.message)
+		next(error)
+	}
+}

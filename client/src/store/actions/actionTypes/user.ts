@@ -38,5 +38,9 @@ export const REMOVE_FOLLOWER_REQUEST = 'REMOVE_FOLLOWER_REQUEST' as const
 export const REMOVE_FOLLOWER_SUCCESS = 'REMOVE_FOLLOWER_SUCCESS' as const
 export const REMOVE_FOLLOWER_FAILURE = 'REMOVE_FOLLOWER_FAILURE' as const
 
+export const LOAD_USER_REQUEST = 'LOAD_USER_REQUEST' as const
+export const LOAD_USER_SUCCESS = 'LOAD_USER_SUCCESS' as const
+export const LOAD_USER_FAILURE = 'LOAD_USER_FAILURE' as const
+
 export const ADD_POST_TO_ME = 'ADD_POST_TO_ME' as const
 export const REMOVE_POST_OF_ME = 'REMOVE_POST_OF_ME' as const

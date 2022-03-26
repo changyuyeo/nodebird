@@ -31,6 +31,35 @@ export const loadAllPost = async where =>
 		]
 	})
 
+//* 해당 해시태그 게시글 모두 가져오기
+export const loadAllHashtagPost = async (where, name) =>
+	await db.Post.findAll({
+		where,
+		limit: 10,
+		order: [
+			['createdAt', 'DESC'],
+			[db.Comment, 'createdAt', 'DESC']
+		],
+		include: [
+			{ model: db.Hashtag, where: { name } },
+			{ model: db.User, attributes: ['id', 'nickname'] },
+			{ model: db.Image },
+			{
+				model: db.Comment,
+				include: [{ model: db.User, attributes: ['id', 'nickname'] }]
+			},
+			{ model: db.User, as: 'Likers', attributes: ['id'] },
+			{
+				model: db.Post,
+				as: 'Retweet',
+				include: [
+					{ model: db.User, attributes: ['id', 'nickname'] },
+					{ model: db.Image }
+				]
+			}
+		]
+	})
+
 //* 게시글 생성
 export const createPost = async data => await db.Post.create({ ...data })
 

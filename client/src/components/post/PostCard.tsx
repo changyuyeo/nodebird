@@ -1,6 +1,8 @@
-import { FC, useCallback, useEffect, useState } from 'react'
+import { FC, useCallback, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
+import Link from 'next/link'
+import moment from 'moment'
 import { Avatar, Button, Card, Comment, List, Popover } from 'antd'
 import {
 	EllipsisOutlined,
@@ -10,26 +12,33 @@ import {
 	RetweetOutlined
 } from '@ant-design/icons'
 
-import { RootState } from '@store/reducers'
 import PostImages from '@components/post/PostImages'
 import CommentForm from '@components/post/CommentForm'
 import PostCardContent from '@components/post/PostCardContent'
 import FollowButton from '@components/post/FollowButton'
+import { PostDataType } from '@typings/post'
+import { RootState } from '@store/reducers'
 import {
 	likePostAction,
 	removePostAction,
 	retweetAction,
 	unLikePostAction
 } from '@store/actions/post'
-import { PostDataType } from '@typings/post'
 
 const CardWrapper = styled.div`
 	margin-bottom: 20px;
 `
 
+const CardDate = styled.div`
+	float: right;
+	color: #aaa;
+`
+
 interface Props {
 	post: PostDataType
 }
+
+moment.locale('ko')
 
 const PostCard: FC<Props> = ({ post }) => {
 	const dispatch = useDispatch()
@@ -114,24 +123,39 @@ const PostCard: FC<Props> = ({ post }) => {
 							)
 						}
 					>
+						<CardDate>{moment(post.createdAt, 'YYYYMMDD').fromNow()}</CardDate>
 						<Card.Meta
 							avatar={
-								<Avatar>
-									{post.Retweet.User.nickname && post.Retweet.User.nickname[0]}
-								</Avatar>
+								<Link href={`/user/${post.Retweet.User.id}`}>
+									<a>
+										<Avatar>
+											{post.Retweet.User.nickname &&
+												post.Retweet.User.nickname[0]}
+										</Avatar>
+									</a>
+								</Link>
 							}
 							title={post.Retweet.User.nickname}
 							description={<PostCardContent postData={post.Retweet.content} />}
 						/>
 					</Card>
 				) : (
-					<Card.Meta
-						avatar={
-							<Avatar>{post.User.nickname && post.User.nickname[0]}</Avatar>
-						}
-						title={post.User.nickname}
-						description={<PostCardContent postData={post.content} />}
-					/>
+					<>
+						<CardDate>{moment(post.createdAt, 'YYYYMMDD').fromNow()}</CardDate>
+						<Card.Meta
+							avatar={
+								<Link href={`/user/${post.User.id}`}>
+									<a>
+										<Avatar>
+											{post.User.nickname && post.User.nickname[0]}
+										</Avatar>
+									</a>
+								</Link>
+							}
+							title={post.User.nickname}
+							description={<PostCardContent postData={post.content} />}
+						/>
+					</>
 				)}
 			</Card>
 			{commentFormOpened && (
@@ -146,9 +170,13 @@ const PostCard: FC<Props> = ({ post }) => {
 								<Comment
 									author={item.User.nickname}
 									avatar={
-										<Avatar>
-											{item.User.nickname && item.User.nickname[0]}
-										</Avatar>
+										<Link href={`/user/${item.User.id}`}>
+											<a>
+												<Avatar>
+													{item.User.nickname && item.User.nickname[0]}
+												</Avatar>
+											</a>
+										</Link>
 									}
 									content={item.content}
 								/>

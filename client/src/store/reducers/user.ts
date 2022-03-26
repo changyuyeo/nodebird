@@ -35,7 +35,11 @@ const initialState: UserState = {
 	removeFollowerLoading: false,
 	removeFollowerDone: false,
 	removeFollowerError: null,
-	me: null
+	loadUserLoading: false,
+	loadUserDone: false,
+	loadUserError: null,
+	me: null,
+	userInfo: null
 }
 
 const userReducers = (state = initialState, action: AnyAction) =>
@@ -195,6 +199,21 @@ const userReducers = (state = initialState, action: AnyAction) =>
 			case actions.REMOVE_FOLLOWER_FAILURE:
 				draft.removeFollowerLoading = false
 				draft.removeFollowerError = action.error
+				break
+			//* LOAD_USER
+			case actions.LOAD_USER_REQUEST:
+				draft.loadUserLoading = true
+				draft.loadUserDone = false
+				draft.loadUserError = null
+				break
+			case actions.LOAD_USER_SUCCESS:
+				draft.loadUserLoading = false
+				draft.loadUserDone = true
+				draft.userInfo = action.data
+				break
+			case actions.LOAD_USER_FAILURE:
+				draft.loadUserLoading = false
+				draft.loadUserError = action.error
 				break
 			//* POST_ME
 			case actions.ADD_POST_TO_ME:

@@ -31,9 +31,13 @@ export const followAPI = (userId: number) => user.patch(`/${userId}/follow`)
 
 export const unFollowAPI = (userId: number) => user.delete(`/${userId}/follow`)
 
-export const loadFollowersAPI = () => user.get('/followers')
+export const loadFollowersAPI = (data: number) =>
+	user.get(`/followers?limit=${data}`)
 
-export const loadFollowingsAPI = () => user.get('/followings')
+export const loadFollowingsAPI = (data: number) =>
+	user.get(`/followings?limit=${data}`)
 
 export const removeFollowerAPI = (userId: number) =>
 	user.delete(`/follower/${userId}`)
+
+export const loadUserAPI = (userId: number) => user.get(`/${userId}`)

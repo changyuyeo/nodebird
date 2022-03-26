@@ -8,14 +8,32 @@ import {
 	fullUserWithoutPassword
 } from './repository.js'
 
-//* user 불러오기
-export const userLoadService = async (req, res, next) => {
+//* 내정보 불러오기
+export const myInfoLoadService = async (req, res, next) => {
 	try {
 		let user
 		req.user
 			? (user = await fullUserWithoutPassword(req.user.id))
 			: (user = null)
 		return res.status(200).json(user)
+	} catch (error) {
+		console.error(error.message)
+		next(error)
+	}
+}
+
+//* 유저정보 불러오기
+export const userLoadService = async (req, res, next) => {
+	try {
+		const user = await fullUserWithoutPassword(req.params.userId)
+		if (user) {
+			user.Posts = user.Posts.length
+			user.Followings = user.Followings.length
+			user.Followers = user.Followers.length
+			res.status(200).json(user)
+		} else {
+			res.status(404).json({ message: '존재하지 않는 사용자입니다.' })
+		}
 	} catch (error) {
 		console.error(error.message)
 		next(error)
@@ -100,10 +118,11 @@ export const unFollowService = async (req, res, next) => {
 //* followers 불러오기
 export const loadFollowersService = async (req, res, next) => {
 	try {
+		const limit = parseInt(req.query.limit, 10)
 		const user = await existsUser({ id: req.user.id })
 		if (!user)
 			return res.status(403).json({ message: '유저가 존재하지 않습니다.' })
-		const followers = await user.getFollowers()
+		const followers = await user.getFollowers({ limit })
 		return res.status(200).json(followers)
 	} catch (error) {
 		console.error(error)
@@ -114,10 +133,11 @@ export const loadFollowersService = async (req, res, next) => {
 //* followings 불러오기
 export const loadFollowingsService = async (req, res, next) => {
 	try {
+		const limit = parseInt(req.query.limit, 10)
 		const user = await existsUser({ id: req.user.id })
 		if (!user)
 			return res.status(403).json({ message: '유저가 존재하지 않습니다.' })
-		const followings = await user.getFollowings()
+		const followings = await user.getFollowings({ limit })
 		return res.status(200).json(followings)
 	} catch (error) {
 		console.error(error)

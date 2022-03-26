@@ -1,22 +1,23 @@
 import { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import Router from 'next/router'
 import Head from 'next/head'
 
 import AppLayout from '@components/layout/AppLayout'
 import NicknameForm from '@components/profile/NicknameForm'
 import FollowList from '@components/profile/FollowList'
+import wrapper from '@store/index'
 import { RootState } from '@store/reducers'
-import { loadFollowersAction, loadFollowingsAction } from '@store/actions/user'
+import {
+	loadFollowersAction,
+	loadFollowingsAction,
+	loadMyInfoAction
+} from '@store/actions/user'
+import axios from 'axios'
+import { END } from 'redux-saga'
 
 const ProfilePage = () => {
-	const dispatch = useDispatch()
 	const { me } = useSelector((state: RootState) => state.user)
-
-	useEffect(() => {
-		dispatch(loadFollowersAction())
-		dispatch(loadFollowingsAction())
-	}, [dispatch])
 
 	useEffect(() => {
 		if (!(me && me.id)) Router.push('/')
@@ -37,5 +38,20 @@ const ProfilePage = () => {
 		</>
 	)
 }
+
+export const getServerSideProps = wrapper.getServerSideProps(
+	store =>
+		async ({ req }) => {
+			const cookie = req ? req.headers.cookie : ''
+			axios.defaults.headers.Cookie = ''
+			req && cookie && (axios.defaults.headers.Cookie = cookie)
+			store.dispatch(loadMyInfoAction())
+			store.dispatch(loadFollowersAction(3))
+			store.dispatch(loadFollowingsAction(3))
+			store.dispatch(END)
+			await store.sagaTask?.toPromise()
+			return { props: {} }
+		}
+)
 
 export default ProfilePage

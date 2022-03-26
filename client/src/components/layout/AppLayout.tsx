@@ -1,13 +1,14 @@
-import { FC } from 'react'
+import { FC, useCallback } from 'react'
 import { useSelector } from 'react-redux'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
+import Router, { useRouter } from 'next/router'
 import styled from 'styled-components'
 import { Col, Input, Menu, Row } from 'antd'
 
 import UserProfile from '@components/common/UserProfile'
 import LoginForm from '@components/common/LoginForm'
 import { RootState } from '@store/reducers'
+import useInput from '@hooks/useInput'
 
 const SearchInput = styled(Input.Search)`
 	vertical-align: middle;
@@ -17,6 +18,13 @@ const AppLayout: FC = ({ children }) => {
 	const { me } = useSelector((state: RootState) => state.user)
 
 	const router = useRouter()
+
+	const [searchInput, onChangeSearchInput] = useInput('')
+
+	const onSearch = useCallback(
+		() => Router.push(`/hashtag/${searchInput}`),
+		[searchInput]
+	)
 
 	return (
 		<>
@@ -32,12 +40,12 @@ const AppLayout: FC = ({ children }) => {
 					</Link>
 				</Menu.Item>
 				<Menu.Item key="searchInput">
-					<SearchInput enterButton />
-				</Menu.Item>
-				<Menu.Item key="/signup">
-					<Link href="/signup">
-						<a>회원가입</a>
-					</Link>
+					<SearchInput
+						enterButton
+						value={searchInput}
+						onChange={onChangeSearchInput}
+						onSearch={onSearch}
+					/>
 				</Menu.Item>
 			</Menu>
 			<Row gutter={8}>

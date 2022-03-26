@@ -1,5 +1,6 @@
 import { UserDataType } from '@typings/user'
 import { PostDataType } from '@typings/post'
+import { type } from 'os'
 
 export interface UserState {
 	loadMyInfoLoading: boolean
@@ -32,7 +33,11 @@ export interface UserState {
 	removeFollowerLoading: boolean
 	removeFollowerDone: boolean
 	removeFollowerError: string | null
+	loadUserLoading: boolean
+	loadUserDone: boolean
+	loadUserError: string | null
 	me: UserDataType | null
+	userInfo: UserDataType | null
 }
 
 export interface PostState {
@@ -61,6 +66,7 @@ export interface PostState {
 	retweetDone: boolean
 	retweetError: string | null
 	mainPosts: PostDataType[]
+	singlePost: PostDataType | null
 	imagePaths: string[]
 	hasMorePost: boolean
 }

@@ -34,17 +34,24 @@ export const unfollowAction = (payload: number) => ({
 	payload
 })
 
-export const loadFollowersAction = () => ({
-	type: actions.LOAD_FOLLOWERS_REQUEST
+export const loadFollowersAction = (data: number) => ({
+	type: actions.LOAD_FOLLOWERS_REQUEST,
+	data
 })
 
-export const loadFollowingsAction = () => ({
-	type: actions.LOAD_FOLLOWINGS_REQUEST
+export const loadFollowingsAction = (data: number) => ({
+	type: actions.LOAD_FOLLOWINGS_REQUEST,
+	data
 })
 
 export const removeFollowerAction = (payload: number) => ({
 	type: actions.REMOVE_FOLLOWER_REQUEST,
 	payload
+})
+
+export const loadUserAction = (data: number) => ({
+	type: actions.LOAD_USER_REQUEST,
+	data
 })
 
 export type SignUpActionType = ReturnType<typeof signUpAction>
@@ -53,4 +60,7 @@ export type LogOutActionType = ReturnType<typeof logOutAction>
 export type ChangeNicknameActionType = ReturnType<typeof changeNicknameAction>
 export type FollowActionType = ReturnType<typeof followAction>
 export type UnfollowActionType = ReturnType<typeof unfollowAction>
+export type LoadFollowersActionType = ReturnType<typeof loadFollowersAction>
+export type LoadFollowingsActionType = ReturnType<typeof loadFollowingsAction>
 export type RemoveFollowerActionType = ReturnType<typeof removeFollowerAction>
+export type LoadUserActionType = ReturnType<typeof loadUserAction>

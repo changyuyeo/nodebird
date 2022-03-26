@@ -2,13 +2,16 @@ import { ChangeEvent, useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import Head from 'next/head'
 import Router from 'next/router'
+import { END } from 'redux-saga'
+import axios from 'axios'
 import styled from 'styled-components'
 import { Button, Checkbox, Form, Input } from 'antd'
 
 import AppLayout from '@components/layout/AppLayout'
 import useInput from '@hooks/useInput'
-import { signUpAction } from '@store/actions/user'
+import { loadMyInfoAction, signUpAction } from '@store/actions/user'
 import { RootState } from '@store/reducers'
+import wrapper from '@store/index'
 
 const ErrorMessage = styled.div`
 	color: crimson;
@@ -25,7 +28,7 @@ const SignupPage = () => {
 	)
 
 	useEffect(() => {
-		if (me) Router.replace('/')
+		if (me && me.id) Router.replace('/')
 		else if (signUpDone) Router.push('/')
 		else if (signUpError) alert(signUpError)
 	}, [me, signUpDone, signUpError])
@@ -129,5 +132,18 @@ const SignupPage = () => {
 		</>
 	)
 }
+
+export const getServerSideProps = wrapper.getServerSideProps(
+	store =>
+		async ({ req }) => {
+			const cookie = req ? req.headers.cookie : ''
+			axios.defaults.headers.Cookie = ''
+			req && cookie && (axios.defaults.headers.Cookie = cookie)
+			store.dispatch(loadMyInfoAction())
+			store.dispatch(END)
+			await store.sagaTask?.toPromise()
+			return { props: {} }
+		}
+)
 
 export default SignupPage

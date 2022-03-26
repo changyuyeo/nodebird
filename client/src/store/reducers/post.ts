@@ -30,6 +30,7 @@ const initialState: PostState = {
 	retweetDone: false,
 	retweetError: null,
 	mainPosts: [],
+	singlePost: null,
 	imagePaths: [],
 	hasMorePost: true
 }
@@ -39,17 +40,38 @@ const postReducer = (state = initialState, action: AnyAction) =>
 		switch (action.type) {
 			//* LOAD_POSTS
 			case actions.LOAD_POSTS_REQUEST:
+			case actions.LOAD_USER_POSTS_REQUEST:
+			case actions.LOAD_HASHTAG_POSTS_REQUEST:
 				draft.loadPostsLoading = true
 				draft.loadPostsDone = false
 				draft.loadPostsError = null
 				break
 			case actions.LOAD_POSTS_SUCCESS:
+			case actions.LOAD_USER_POSTS_SUCCESS:
+			case actions.LOAD_HASHTAG_POSTS_SUCCESS:
 				draft.loadPostsLoading = false
 				draft.loadPostsDone = true
 				draft.mainPosts = draft.mainPosts.concat(action.data)
 				draft.hasMorePost = action.data.length === 10
 				break
 			case actions.LOAD_POSTS_FAILURE:
+			case actions.LOAD_USER_POSTS_FAILURE:
+			case actions.LOAD_HASHTAG_POSTS_FAILURE:
+				draft.loadPostsLoading = false
+				draft.loadPostsError = action.error
+				break
+			//* LOAD_POST
+			case actions.LOAD_POST_REQUEST:
+				draft.loadPostsLoading = true
+				draft.loadPostsDone = false
+				draft.loadPostsError = null
+				break
+			case actions.LOAD_POST_SUCCESS:
+				draft.loadPostsLoading = false
+				draft.loadPostsDone = true
+				draft.singlePost = action.data
+				break
+			case actions.LOAD_POST_FAILURE:
 				draft.loadPostsLoading = false
 				draft.loadPostsError = action.error
 				break

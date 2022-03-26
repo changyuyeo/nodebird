@@ -94,9 +94,9 @@ function* unFollow(action: types.UnfollowActionType) {
 	}
 }
 
-function* loadFollowers() {
+function* loadFollowers(action: types.LoadFollowersActionType) {
 	try {
-		const { data } = yield call(apis.loadFollowersAPI)
+		const { data } = yield call(apis.loadFollowersAPI, action.data)
 		yield put({ type: actions.LOAD_FOLLOWERS_SUCCESS, data })
 	} catch (error) {
 		yield put({
@@ -106,9 +106,9 @@ function* loadFollowers() {
 	}
 }
 
-function* loadFollowings() {
+function* loadFollowings(action: types.LoadFollowingsActionType) {
 	try {
-		const { data } = yield call(apis.loadFollowingsAPI)
+		const { data } = yield call(apis.loadFollowingsAPI, action.data)
 		yield put({ type: actions.LOAD_FOLLOWINGS_SUCCESS, data })
 	} catch (error) {
 		yield put({
@@ -125,6 +125,18 @@ function* removeFollower(action: types.RemoveFollowerActionType) {
 	} catch (error) {
 		yield put({
 			type: actions.REMOVE_FOLLOWER_FAILURE,
+			error: (error as Error).response.data
+		})
+	}
+}
+
+function* loadUser(action: types.LoadUserActionType) {
+	try {
+		const { data } = yield call(apis.loadUserAPI, action.data)
+		yield put({ type: actions.LOAD_USER_SUCCESS, data })
+	} catch (error) {
+		yield put({
+			type: actions.LOAD_USER_FAILURE,
 			error: (error as Error).response.data
 		})
 	}
@@ -171,6 +183,10 @@ function* watchRemoveFollower() {
 	yield takeLatest(actions.REMOVE_FOLLOWER_REQUEST, removeFollower)
 }
 
+function* watchLoadUser() {
+	yield takeLatest(actions.LOAD_USER_REQUEST, loadUser)
+}
+
 export default function* userSaga() {
 	yield all([
 		fork(watchLoadMyInfo),
@@ -182,6 +198,7 @@ export default function* userSaga() {
 		fork(watchUnFollow),
 		fork(watchLoadFollowers),
 		fork(watchLoadFollowings),
-		fork(watchRemoveFollower)
+		fork(watchRemoveFollower),
+		fork(watchLoadUser)
 	])
 }

@@ -1,4 +1,4 @@
-import { all, call, fork, put, takeLatest } from 'redux-saga/effects'
+import { all, call, fork, put, takeLatest, throttle } from 'redux-saga/effects'
 
 import * as apis from '@lib/api/post'
 import * as userActions from '@store/actions/actionTypes/user'
@@ -11,13 +11,40 @@ interface Error {
 	}
 }
 
-function* loadPost(action: types.LoadPostActionType) {
+function* loadPosts(action: types.LoadPostsActionType) {
 	try {
 		const { data } = yield call(apis.loadPostsAPI, action.data)
 		yield put({ type: postActions.LOAD_POSTS_SUCCESS, data })
 	} catch (error) {
+		yield put({ type: postActions.LOAD_POSTS_FAILURE, error })
+	}
+}
+
+function* loadUserPosts(action: types.LoadUserPostsActionType) {
+	try {
+		const { data } = yield call(apis.loadUserPostsAPI, action.data)
+		yield put({ type: postActions.LOAD_USER_POSTS_SUCCESS, data })
+	} catch (error) {
+		yield put({ type: postActions.LOAD_USER_POSTS_FAILURE, error })
+	}
+}
+
+function* loadHashtagPosts(action: types.LoadHashtagPostsActionType) {
+	try {
+		const { data } = yield call(apis.loadHashtagPostsAPI, action.data)
+		yield put({ type: postActions.LOAD_HASHTAG_POSTS_SUCCESS, data })
+	} catch (error) {
+		yield put({ type: postActions.LOAD_HASHTAG_POSTS_FAILURE, error })
+	}
+}
+
+function* loadPost(action: types.LoadPostActionType) {
+	try {
+		const { data } = yield call(apis.loadPostAPI, action.data)
+		yield put({ type: postActions.LOAD_POST_SUCCESS, data })
+	} catch (error) {
 		yield put({
-			type: postActions.LOAD_POSTS_FAILURE,
+			type: postActions.LOAD_POST_FAILURE,
 			error: (error as Error).response.data.message
 		})
 	}
@@ -110,8 +137,20 @@ function* retweet(action: types.RetweetActionType) {
 }
 
 //* watch
+function* watchLoadPosts() {
+	yield throttle(5000, postActions.LOAD_POSTS_REQUEST, loadPosts)
+}
+
+function* watchLoadUserPosts() {
+	yield throttle(5000, postActions.LOAD_USER_POSTS_REQUEST, loadUserPosts)
+}
+
+function* watchLoadHashtagPosts() {
+	yield throttle(5000, postActions.LOAD_HASHTAG_POSTS_REQUEST, loadHashtagPosts)
+}
+
 function* watchLoadPost() {
-	yield takeLatest(postActions.LOAD_POSTS_REQUEST, loadPost)
+	yield takeLatest(postActions.LOAD_POST_REQUEST, loadPost)
 }
 
 function* watchAddPost() {
@@ -144,6 +183,9 @@ function* watchRetweet() {
 
 export default function* postSaga() {
 	yield all([
+		fork(watchLoadPosts),
+		fork(watchLoadUserPosts),
+		fork(watchLoadHashtagPosts),
 		fork(watchLoadPost),
 		fork(watchAddPost),
 		fork(watchAddComment),
