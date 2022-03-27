@@ -3,8 +3,8 @@
 	"private": true,
 	"scripts": {
 		"dev": "next dev",
-		"build": "cross-env ANALYZE=true NODE_ENV=production next build",
-		"start": "cross-env NODE_ENV=production next start",
+		"build": "cross-env ANALYZE=true NODE_ENV=production GENERATE_SOURCEMAP=false NODE_OPTIONS=--max_old_space_size=2048 next build",
+		"start": "cross-env NODE_ENV=production NODE_OPTIONS=--max_old_space_size=2048 next start",
 		"lint": "next lint"
 	},
 	"dependencies": {
